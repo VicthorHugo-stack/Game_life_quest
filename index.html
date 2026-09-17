@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo de Plataforma & Perguntas - Habilidades Profissionais</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e1e2f 0%, #0f0c20 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        #game-container {
+            width: 1000px;
+            height: 560px;
+            background-color: #2b2640;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: rgba(25, 22, 39, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .hidden {
+            display: none !important;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            background: linear-gradient(90deg, #8a2be2, #00ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        .char-selection {
+            display: flex;
+            gap: 40px;
+            margin: 20px 0;
+        }
+
+        .char-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 30px 45px;
+            border-radius: 14px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .char-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #00ffff;
+            box-shadow: 0 10px 20px rgba(0, 255, 255, 0.2);
+        }
+
+        .char-avatar {
+            font-size: 65px;
+            margin-bottom: 10px;
+        }
+
+        .grid-fases {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            width: 100%;
+            max-width: 880px;
+        }
+
+        .btn-fase {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-fase:not(.locked):hover {
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            transform: scale(1.03);
+        }
+
+        .btn-fase.locked {
+            background: rgba(0, 0, 0, 0.2);
+            opacity: 0.4;
+            cursor: not-allowed;
+            border-color: transparent;
+        }
+
+        .btn-fase small {
+            font-size: 11px;
+            margin-top: 5px;
+            opacity: 0.8;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        #hud {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: rgba(15, 12, 32, 0.85);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 15px;
+            z-index: 1;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .hud-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hud-badge {
+            background: rgba(255,255,255,0.1);
+            padding: 5px 12px;
+            border-radius: 20px;
+            color: #00ffff;
+        }
+
+        #gameCanvas {
+            background: #1a162b;
+            display: block;
+        }
+
+        .modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 8, 20, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .modal-content {
+            background: #231f38;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #fff;
+            padding: 30px;
+            border-radius: 16px;
+            max-width: 650px;
+            width: 90%;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+        }
+
+        #opcoes-container {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        @keyframes pulseSelect {
+            0% { transform: scale(1); border-color: rgba(255, 255, 255, 0.15); }
+            50% { transform: scale(1.02); border-color: #00ffff; box-shadow: 0 0 15px rgba(0,255,255,0.4); }
+            100% { transform: scale(1); border-color: #00ffff; }
+        }
+
+        .btn-opcao {
+            padding: 14px 18px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: #fff;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+            outline: none !important;
+            transition: transform 0.15s ease, border-color 0.15s ease;
+        }
+
+        .btn-opcao:focus {
+            outline: none !important;
+            animation: pulseSelect 0.3s ease forwards;
+            border-color: #00ffff;
+        }
+
+        .btn-voltar {
+            margin-top: 20px;
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-voltar:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .agradecimento-box {
+            text-align: center;
+            background: linear-gradient(135deg, #2b2640, #1e1e2f);
+            border: 2px solid #00ffff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+            max-width: 600px;
+            width: 90%;
+        }
+
+        .agradecimento-box p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #dcdde1;
+        }
+
+        .pontos-final {
+            font-size: 28px;
+            color: #00ffff;
+            font-weight: 700;
+            margin: 15px 0 25px 0;
+            background: rgba(0, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px dashed #00ffff;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        
+        <!-- Menu de Personagem -->
+        <div id="menu-personagem" class="screen">
+            <h1>Seja bem vindo ao life Quest desenvolvido pela turma 218 <br><br>
+                Para começar escolha o seu personagem.
+            </h1>
+            <div class="char-selection">
+                <div class="char-card" onclick="selecionarPersonagem('M')">
+                    <!-- [PIXEL ART] Local para inserir imagem/avatar do personagem Masculino -->
+                    <div class="char-avatar">🧍‍♂️</div>
+                    <span>Masculino</span>
+                </div>
+                <div class="char-card" onclick="selecionarPersonagem('F')">
+                    <!-- [PIXEL ART] Local para inserir imagem/avatar do personagem Feminino -->
+                    <div class="char-avatar">🧍‍♀️</div>
+                    <span>Feminino</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menu de Fases -->
+        <div id="menu-fases" class="screen hidden">
+            <h1>Escolha a Fase / Tema</h1>
+            <div class="grid-fases" id="grid-fases"></div>
+            <button class="btn-voltar" onclick="voltarPersonagem()">Trocar Personagem</button>
+        </div>
+
+        <!-- Tela do Jogo -->
+        <div id="game-screen" class="screen hidden" style="padding:0;">
+            <div id="hud">
+                <div class="hud-item">Pontos: <span id="score-val" class="hud-badge">0</span></div>
+                <div class="hud-item">Munição: <span id="ammo-val" class="hud-badge" style="color:#fdcb6e">0</span></div>
+                <div class="hud-item">Erros na Fase: <span id="erros-val" class="hud-badge" style="color:#ff7675">0/2</span></div>
+                <div class="hud-item">Fase: <span id="fase-val" class="hud-badge">1</span></div>
+            </div>
+            <canvas id="gameCanvas" width="1000" height="560"></canvas>
+        </div>
+
+        <!-- Tela de Agradecimento Final (Fase 8 concluída) -->
+        <div id="tela-agradecimento" class="screen hidden">
+            <div class="agradecimento-box">
+                <h1>Parabéns! 🏆</h1>
+                <p>Você completou com sucesso todas as fases e jornadas sobre o mundo do trabalho, carreiras e direitos trabalhistas!</p>
+                <div class="pontos-final">Pontuação Final: <span id="final-score-val">0</span> pontos</div>
+                <p>Muito obrigado por jogar, aprender e se dedicar ao seu futuro profissional!</p>
+                <button class="btn-voltar" onclick="voltarAoMenuPrincipal()" style="background: #00ffff; color: #0f0c20; font-weight: 700; width: 100%;">Jogar Novamente / Menu</button>
+            </div>
+        </div>
+
+        <!-- Modal de Pergunta / Avisos -->
+        <div id="modal-pergunta" class="modal hidden">
+            <div class="modal-content">
+                <h3 id="modal-titulo" style="color: #00ffff; margin-bottom: 12px; font-size: 20px;">Aviso</h3>
+                <p id="pergunta-texto" style="font-size: 15px; line-height: 1.6;"></p>
+                <div id="opcoes-container"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const temas = {
+            1: "Transformações no mundo do trabalho: da indústria ao digital",
+            2: "Novas profissões e habilidades do futuro",
+            3: "Empregabilidade e carreira: o que o mercado espera dos jovens",
+            4: "Competências socioemocionais no ambiente de trabalho",
+            5: "Trabalho informal, autônomo e economia criativa",
+            6: "Tecnologia, automação e inteligência artificial no trabalho",
+            7: "Desigualdade de acesso e inserção de jovens no mercado",
+            8: "Direitos trabalhistas básicos e proteção legal"
+        };
+
+        const perguntasPorTema = {
+            1: [
+                { p: "Qual é a mudança central na passagem da era industrial para a era digital no trabalho?", opts: ["A) O trabalho tornou-se exclusivamente manual e presencial", "B) Cresceram o trabalho remoto, a tecnologia e a prestação de serviços", "C) Todas as profissões foram extintas", "D) A qualificação deixou de ser necessária"], resp: 1 },
+                { p: "Antigamente, nas fábricas, o foco era a produção de bens físicos. Hoje, a tendência é:", opts: ["A) Voltar totalmente ao trabalho rural", "B) Priorizar serviços, informação e conexão entre pessoas e tecnologias", "C) Repetir os mesmos processos sem nenhuma mudança", "D) Proibir o uso de computadores nas empresas"], resp: 1 },
+                { p: "Como a tecnologia influencia a relação entre trabalhador e empresa?", opts: ["A) Exige presença física obrigatória todos os dias", "B) Permite trabalhar de lugares diferentes e exige aprendizado constante", "C) Torna o trabalhador dispensável para sempre", "D) Reduz todas as oportunidades de emprego"], resp: 1 },
+                { p: "Qual frase descreve corretamente a transformação do mundo do trabalho?", opts: ["A) As máquinas substituem tudo e não há espaço para pessoas", "B) O trabalho não muda, só mudam as ferramentas", "C) As funções mudam: tarefas repetitivas são automatizadas e surgem novas vagas", "D) A era digital só atinge pessoas ricas"], resp: 2 }
+            ],
+            2: [
+                { p: "Quais habilidades serão mais valorizadas nas profissões do futuro?", opts: ["A) Repetição, força física e obediência", "B) Criatividade, pensamento crítico, comunicação e domínio digital", "C) Apenas memorização de regras", "D) Fazer sempre a mesma tarefa do mesmo jeito"], resp: 1 },
+                { p: "Qual exemplo representa uma profissão nova do mercado digital?", opts: ["A) Operador de tear manual", "B) Especialista em inteligência artificial e análise de dados", "C) Carteiro que entrega apenas correspondências impressas", "D) Tecelão"], resp: 1 },
+                { p: "Por que o aprendizado contínuo é essencial hoje?", opts: ["A) Porque as profissões e tecnologias mudam com muita rapidez", "B) Porque a escola não ensina nada útil", "C) Porque é obrigatório por lei estudar a vida toda", "D) Porque sem estudo ninguém consegue fazer nada"], resp: 0 },
+                { p: "O mercado pede profissionais capazes de:", opts: ["A) Resolver problemas e se adaptar a novas situações", "B) Fazer apenas o que já foi feito antes", "C) Evitar qualquer mudança", "D) Trabalhar sozinho sem se comunicar"], resp: 0 }
+            ],
+            3: [
+                { p: "Qual atitude o mercado mais valoriza no jovem profissional?", opts: ["A) Proatividade, responsabilidade e disposição para aprender", "B) Fazer só o mínimo necessário", "C) Culpar os outros quando erra", "D) Esperar que tudo chegue sem esforço"], resp: 0 },
+                { p: "Ter boa empregabilidade significa:", opts: ["A) Ter muitos contatos e ser indicado sempre", "B) Estar preparado, se atualizar e aproveitar oportunidades", "C) Aceitar qualquer trabalho sem questionar", "D) Ter diploma sem praticar nada"], resp: 1 },
+                { p: "Como o jovem pode se destacar no início da carreira?", opts: ["A) Demonstrar interesse, cumprir horários e colaborar com a equipe", "B) Chegar atrasado e sair antes", "C) Deixar tarefas para os outros", "D) Recusar aprender coisas novas"], resp: 0 },
+                { p: "O mercado espera que o jovem profissional:", opts: ["A) Tenha visão de futuro e busque crescimento constante", "B) Não mude de emprego nunca", "C) Seja sempre mandado e nunca opine", "D) Conheça tudo desde o primeiro dia"], resp: 0 }
+            ],
+            4: [
+                { p: "O que são competências socioemocionais?", opts: ["A) Habilidades ligadas a lidar com emoções, relações e convivência", "B) Conhecimento exclusivo de matemática", "C) Capacidade de falar em público apenas", "D) Técnicas para ganhar mais dinheiro"], resp: 0 },
+                { p: "Por que a empatia é importante no trabalho?", opts: ["A) Porque ajuda a entender o outro e a trabalhar melhor em equipe", "B) Porque faz os outros sentirem pena", "C) Porque substitui o conhecimento técnico", "D) Porque serve só para ser educado"], resp: 0 },
+                { p: "Resiliência no trabalho significa:", opts: ["A) Desistir ao primeiro problema", "B) Se recuperar de dificuldades e continuar avançando", "C) Culpar os outros pelos erros", "D) Fingir que nada acontece"], resp: 1 },
+                { p: "A comunicação clara e respeitosa no ambiente de trabalho:", opts: ["A) Evita mal-entendidos e melhora os resultados", "B) Torna a pessoa falante demais", "C) Deixa o trabalho mais lento", "D) É útil só para quem é chefe"], resp: 0 }
+            ],
+            5: [
+                { p: "Qual é uma vantagem do trabalho autônomo?", opts: ["A) Salário fixo garantido todos os meses", "B) Liberdade para organizar o próprio tempo", "C) Férias e 13º salário garantidos automaticamente", "D) Nenhuma preocupação com contas"], resp: 1 },
+                { p: "Qual é um desafio comum ao trabalho informal?", opts: ["A) Falta de direitos trabalhistas e instabilidade de renda", "B) Ganhar sempre mais do que no emprego formal", "C) Ter horário fixo definido por outra pessoa", "D) Não precisar trabalhar"], resp: 0 },
+                { p: "O que é a economia criativa?", opts: ["A) Trabalho que gera renda a partir de ideias, cultura, arte e inovação", "B) Vender produtos copiados", "C) Fazer o mesmo que sempre foi feito", "D) Economizar dinheiro sem gastar"], resp: 0 },
+                { p: "Para trabalhar por conta própria, é preciso:", opts: ["A) Ter disciplina, organização financeira e planejamento", "B) Não anotar gastos nem calcular valores", "C) Depender de alguém mandar o que fazer", "D) Trabalhar sem nenhum planejamento"], resp: 0 }
+            ],
+            6: [
+                { p: "Como a inteligência artificial afeta as vagas de emprego?", opts: ["A) Substitui tarefas repetitivas e cria novas funções para quem se atualiza", "B) Acaba com todos os empregos para sempre", "C) Não muda nada nas funções", "D) Só afeta trabalhadores sem estudo"], resp: 0 },
+                { p: "Qual atitude protege o profissional diante da automação?", opts: ["A) Aprender a usar e trabalhar junto com as novas tecnologias", "B) Ignorar a tecnologia e esperar passar", "C) Fazer greve contra as máquinas", "D) Continuar fazendo tudo do jeito antigo"], resp: 0 },
+                { p: "A automação é a capacidade de:", opts: ["A) Máquinas realizarem tarefas com pouca ou nenhuma ajuda humana", "B) As máquinas substituírem completamente as pessoas em tudo", "C) Ninguém precisar trabalhar mais", "D) Quebrar equipamentos antigos"], resp: 0 },
+                { p: "O futuro do trabalho com tecnologia exige do profissional:", opts: ["A) Atualização constante e capacidade de inovar", "B) Saber usar apenas um programa para sempre", "C) Deixar a máquina resolver tudo sozinha", "D) Evitar contato com computadores"], resp: 0 }
+            ],
+            7: [
+                { p: "Qual fator contribui para a desigualdade na entrada dos jovens no mercado?", opts: ["A) Diferenças no acesso à educação, internet e oportunidades", "B) Falta de vontade de todos os jovens", "C) O mercado não precisa de novos profissionais", "D) Os jovens sabem demais e assustam os patrões"], resp: 0 },
+                { p: "Por que muitos jovens têm mais dificuldade do que outros para conseguir emprego?", opts: ["A) Porque nascem em contextos com menos recursos e apoio", "B) Porque não querem trabalhar de verdade", "C) Porque o Brasil não tem vagas nenhuma", "D) Porque os patrões não gostam de jovens"], resp: 0 },
+                { p: "O que pode reduzir a desigualdade de oportunidades?", opts: ["A) Educação de qualidade, acesso digital e apoio profissional para todos", "B) Deixar cada um resolver sozinho", "C) Dar oportunidades só para quem já tem dinheiro", "D) Exigir experiência de quem acabou de estudar"], resp: 0 },
+                { p: "Discriminação no mercado de trabalho significa:", opts: ["A) Tratar pessoas de forma desigual por raça, gênero, origem ou condição social", "B) Escolher o mais preparado", "C) Contratar quem tem mais experiência", "D) Dar oportunidades iguais a todos"], resp: 0 }
+            ],
+            8: [
+                { p: "Qual é o objetivo principal dos direitos trabalhistas?", opts: ["A) Garantir trabalho digno, justo e proteger o trabalhador", "B) Dar vantagem só para o patrão", "C) Dificultar a abertura de empresas", "D) Proibir que pessoas trabalhem"], resp: 0 },
+                { p: "Quem tem direito a férias, 13º salário e jornada definida?", opts: ["A) O trabalhador com carteira assinada", "B) Quem trabalha sem registro", "C) Apenas quem é patrão", "D) Quem trabalha apenas um dia"], resp: 0 },
+                { p: "O que fazer quando os seus direitos trabalhistas não são respeitados?", opts: ["A) Buscar ajuda no Ministério Público do Trabalho ou com um advogado", "B) Aceitar calado para não perder o emprego", "C) Demitir-se sem dizer nada", "D) Brigar com o patrão"], resp: 0 },
+                { p: "A lei trabalhista existe para:", opts: ["A) Equilibrar a relação entre empregado e empregador", "B) Controlar a vida pessoal dos trabalhadores", "C) Deixar o patrão mandar em tudo", "D) Impedir que jovens trabalhem"], resp: 0 }
+            ]
+        };
+
+        const perguntasLimbo = [
+            { p: "[LIMBO 1/7] Qual a importância da ética profissional?", opts: ["Construir relações de confiança e respeito", "Enganar clientes", "Ignorar regras"], resp: 0 },
+            { p: "[LIMBO 2/7] O que significa soft skills?", opts: ["Habilidades comportamentais e relacionais", "Programação de computadores", "Força física"], resp: 0 },
+            { p: "[LIMBO 3/7] O trabalho em equipe exige:", opts: ["Comunicação e colaboração", "Individualismo total", "Fazer tudo sozinho"], resp: 0 },
+            { p: "[LIMBO 4/7] O que é um feedback?", opts: ["Retorno sobre desempenho para melhoria", "Uma punição obrigatória", "Um presente de aniversário"], resp: 0 },
+            { p: "[LIMBO 5/7] O aprendizado contínuo serve para:", opts: ["Se manter atualizado e adaptável", "Apenas passar tempo", "Substituir o trabalho"], resp: 0 },
+            { p: "[LIMBO 6/7] A pontualidade demonstra:", opts: ["Respeito e comprometimento", "Falta do que fazer", "Desrespeito aos colegas"], resp: 0 },
+            { p: "[LIMBO 7/7] Diante de um erro no trabalho você deve:", opts: ["Assumir, corrigir e aprender", "Culpar um colega", "Fingir que não viu"], resp: 0 }
+        ];
+
+        let generoPersonagem = 'M';
+        let temaAtual = 1;
+        let fasesLiberadas = [1];
+        let pontuacao = 0;
+        let errosFaseAtual = 0;
+        let emPausa = false;
+        let noLimbo = false;
+        let indiceLimbo = 0;
+        let municao = 0;
+        let animFrameId = null;
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const MAP_WIDTH = 3200;
+        let cameraX = 0;
+
+        let player = {
+            x: 50,
+            y: 350,
+            w: 36,
+            h: 46,
+            vx: 0,
+            vy: 0,
+            speed: 3.5,
+            jumpPower: -12.5,
+            grounded: false,
+            facingRight: true
+        };
+
+        let gravity = 0.55;
+        let keys = {};
+        let blocos = [];
+        let plataformas = [];
+        let inimigos = [];
+        let moedas = [];
+        let molas = [];
+        let municoesItems = [];
+        let projeteis = [];
+        let particulas = [];
+
+        function selecionarPersonagem(g) {
+            generoPersonagem = g;
+            document.getElementById('menu-personagem').classList.add('hidden');
+            document.getElementById('menu-fases').classList.remove('hidden');
+            gerarBotoesFase();
+        }
+
+        function voltarPersonagem() {
+            document.getElementById('menu-fases').classList.add('hidden');
+            document.getElementById('menu-personagem').classList.remove('hidden');
+        }
+
+        function gerarBotoesFase() {
+            const grid = document.getElementById('grid-fases');
+            grid.innerHTML = '';
+            for (let id = 1; id <= 8; id++) {
+                const liberada = fasesLiberadas.includes(id);
+                const btn = document.createElement('button');
+                btn.className = `btn-fase ${liberada ? '' : 'locked'}`;
+                btn.onclick = () => iniciarJogo(id);
+                btn.innerHTML = `
+                    <span style="font-size: 18px;">${liberada ? '⭐' : '🔒'}</span>
+                    <strong style="font-size:13px;">Fase ${id}</strong>
+                    <small>${temas[id]}</small>
+                `;
+                grid.appendChild(btn);
+            }
+        }
+
+        function iniciarJogo(fase) {
+            if (!fasesLiberadas.includes(fase)) return;
+            temaAtual = fase;
+            errosFaseAtual = 0;
+            noLimbo = false;
+            
+            document.getElementById('menu-fases').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            
+            atualizarHUD();
+            resetarNivel();
+
+            if (animFrameId) cancelAnimationFrame(animFrameId);
+            animFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        function atualizarHUD() {
+            document.getElementById('score-val').innerText = pontuacao;
+            document.getElementById('ammo-val').innerText = municao;
+            document.getElementById('erros-val').innerText = `${errosFaseAtual}/2`;
+            document.getElementById('fase-val').innerText = noLimbo ? "LIMBO" : temaAtual;
+        }
+
+        function resetarNivel() {
+            player.x = 50;
+            player.y = 350;
+            player.vx = 0;
+            player.vy = 0;
+            cameraX = 0;
+            projeteis = [];
+            particulas = [];
+
+            // [ESTRUTURA DE FASE DIFERENTE] Configuração personalizada de blocos de perguntas baseada na Fase/Tema atual
+            if (temaAtual === 1) {
+                blocos = [
+                    { x: 350, y: 380, w: 40, h: 40, tipo: 'pergunta', ativa: true },
+                    { x: 1000, y: 360, w: 40, h: 40, tipo: 'pergunta', ativa: true },
+                    { x: 1700, y: 380, w: 40, h: 40, tipo: 'pergunta', ativa: true },
+                    { x: 2400, y: 360, w: 40, h: 40, tipo: 'pergunta', ativa: true }
+                ];
+            } else if (temaAtual === 2) {
+                blocos = [
+                    { x: 400, y: 350, w: 40, h: 40, tipo: 'pergunta', ativa: true },
+                    { x: 950, y: 350, w: 40, h: 40, tipo: 'pergunta', ativa: true },
+                    { x: 1500, y: 350, w: 40, h: 40, tipo: 'pergunta', ativa: true },
+                    { x: 2100, y: 350, w: 40, h: 40, tipo: 'pergunta', ativa: true }
+                ];
+            } else if (temaAtual === 3) {
+                blocos = [
+                    { x: 500, y: 380, w: 40, h: 40, tipo: 'pergunta', ativa: true },
+                    { x: 1100, y: 330, w: 40, h: 40, tipo: 'pergunta', ativa: true },
+                    { x: 1800, y: 380, w: 40, h: 40, tipo: 'pergunta', ativa: true },
+                    { x: 2500, y: 330, w: 40, h: 40, tipo: 'pergunta', ativa: true }
+                ];
+            } else if (temaAtual === 4) {
+                blocos = [
+                    { x: 300, y: 370, w: 40, h: 40, tipo: 'pergunta', ativa: true },
+                    { x: 900, y: 370, w: 40, h: 40, tipo: 'pergunta', ativa: true },
+                    { x: 1600, y: 370, w: 40, h: 40, tipo: 'pergunta', ativa: true },
+                    { x: 2300, y: 370, w: 40, h: 40, tipo: 'pergunta', ativa: true }
+                ];
+            } else if (temaAtual === 5) {
+                blocos = [
+                    { x: 450, y: 360, w: 40, h: 40, tipo: 'pergunta', ativa: true },
+                    { x: 1050, y: 360, w: 40, h: 40, tipo: 'pergunta', ativa: true },
+                    { x: 1650, y: 360, w: 40, h: 40, tipo: 'pergunta', ativa: true },
+                    { x: 2250, y: 360, w: 40, h: 40, tipo: 'pergunta', ativa: true }
+                ];
+            } else if (temaAtual === 6) {
+                blocos = [
+                    { x: 350, y: 340, w: 40, h: 40, tipo: 'pergunta', ativa: true },
+                    { x: 1000, y: 340, w: 40, h: 40, tipo: 'pergunta', ativa: true },
+                    { x: 1750, y: 340, w: 40, h: 40, tipo: 'pergunta', ativa: true },
+                    { x: 2400, y: 340, w: 40, h: 40, tipo: 'pergunta', ativa: true }
+                ];
+            } else if (temaAtual === 7) {
+                blocos = [
+                    { x: 400, y: 380, w: 40, h: 40, tipo: 'pergunta', ativa: true },
+                    { x: 1100, y: 380, w: 40, h: 40, tipo: 'pergunta', ativa: true },
+                    { x: 1800, y: 380, w: 40, h: 40, tipo: 'pergunta', ativa: true },
+                    { x: 2500, y: 380, w: 40, h: 40, tipo: 'pergunta', ativa: true }
+                ];
+            } else {
+                blocos = [
+                    { x: 450, y: 350, w: 40, h: 40, tipo: 'pergunta', ativa: true },
+                    { x: 1050, y: 350, w: 40, h: 40, tipo: 'pergunta', ativa: true },
+                    { x: 1750, y: 350, w: 40, h: 40, tipo: 'pergunta', ativa: true },
+                    { x: 2450, y: 350, w: 40, h: 40, tipo: 'pergunta', ativa: true }
+                ];
+            }
+
+            // [ESTRUTURA DE FASE DIFERENTE] Layout único de plataformas para cada fase
+            if (temaAtual === 1) {
+                plataformas = [
+                    { x: 480, y: 400, w: 160, h: 18 },
+                    { x: 1200, y: 380, w: 180, h: 18 },
+                    { x: 2000, y: 400, w: 160, h: 18 }
+                ];
+                molas = [{ x: 850, y: 475, w: 30, h: 20 }, { x: 2200, y: 475, w: 30, h: 20 }];
+            } else if (temaAtual === 2) {
+                plataformas = [
+                    { x: 300, y: 410, w: 120, h: 18 },
+                    { x: 700, y: 350, w: 120, h: 18 },
+                    { x: 1300, y: 390, w: 140, h: 18 },
+                    { x: 1900, y: 340, w: 150, h: 18 }
+                ];
+                molas = [{ x: 1000, y: 475, w: 30, h: 20 }, { x: 2300, y: 475, w: 30, h: 20 }];
+            } else if (temaAtual === 3) {
+                plataformas = [
+                    { x: 600, y: 390, w: 200, h: 18 },
+                    { x: 1400, y: 370, w: 150, h: 18 },
+                    { x: 2200, y: 390, w: 180, h: 18 }
+                ];
+                molas = [{ x: 950, y: 475, w: 30, h: 20 }, { x: 2050, y: 475, w: 30, h: 20 }];
+            } else if (temaAtual === 4) {
+                plataformas = [
+                    { x: 400, y: 390, w: 130, h: 18 },
+                    { x: 800, y: 350, w: 130, h: 18 },
+                    { x: 1400, y: 390, w: 130, h: 18 },
+                    { x: 2000, y: 350, w: 130, h: 18 }
+                ];
+                molas = [{ x: 1150, y: 475, w: 30, h: 20 }, { x: 2350, y: 475, w: 30, h: 20 }];
+            } else if (temaAtual === 5) {
+                plataformas = [
+                    { x: 550, y: 380, w: 150, h: 18 },
+                    { x: 1250, y: 370, w: 160, h: 18 },
+                    { x: 1950, y: 380, w: 150, h: 18 }
+                ];
+                molas = [{ x: 900, y: 475, w: 30, h: 20 }, { x: 2150, y: 475, w: 30, h: 20 }];
+            } else if (temaAtual === 6) {
+                plataformas = [
+                    { x: 450, y: 370, w: 140, h: 18 },
+                    { x: 950, y: 330, w: 140, h: 18 },
+                    { x: 1550, y: 370, w: 140, h: 18 },
+                    { x: 2150, y: 330, w: 140, h: 18 }
+                ];
+                molas = [{ x: 1300, y: 475, w: 30, h: 20 }, { x: 2500, y: 475, w: 30, h: 20 }];
+            } else if (temaAtual === 7) {
+                plataformas = [
+                    { x: 500, y: 400, w: 170, h: 18 },
+                    { x: 1300, y: 390, w: 170, h: 18 },
+                    { x: 2100, y: 400, w: 170, h: 18 }
+                ];
+                molas = [{ x: 950, y: 475, w: 30, h: 20 }, { x: 2350, y: 475, w: 30, h: 20 }];
+            } else {
+                plataformas = [
+                    { x: 550, y: 390, w: 180, h: 18 },
+                    { x: 1350, y: 370, w: 180, h: 18 },
+                    { x: 2150, y: 390, w: 180, h: 18 }
+                ];
+                molas = [{ x: 1000, y: 475, w: 30, h: 20 }, { x: 2400, y: 475, w: 30, h: 20 }];
+            }
+
+            municoesItems = [
+                { x: 500, y: 460, pegou: false },
+                { x: 1500, y: 460, pegou: false },
+                { x: 2500, y: 460, pegou: false }
+            ];
+
+            // [ESTRUTURA DE FASE DIFERENTE] Quantidade e tipos de inimigos variados por fase
+            if (temaAtual === 1) {
+                inimigos = [
+                    { x: 600, y: 460, w: 35, h: 35, dir: 1, minX: 450, maxX: 800, tipo: 'patrulheiro', vivo: true },
+                    { x: 1800, y: 460, w: 35, h: 35, dir: -1, minX: 1600, maxX: 1950, tipo: 'patrulheiro', vivo: true }
+                ];
+            } else if (temaAtual === 2) {
+                inimigos = [
+                    { x: 500, y: 460, w: 35, h: 35, vy: 0, jumpTimer: 0, tipo: 'saltador', vivo: true },
+                    { x: 1600, y: 460, w: 35, h: 35, vy: 0, jumpTimer: 0, tipo: 'saltador', vivo: true },
+                    { x: 2200, y: 340, w: 32, h: 32, startY: 340, angle: 0, tipo: 'voador', vivo: true }
+                ];
+            } else if (temaAtual === 3) {
+                inimigos = [
+                    { x: 700, y: 460, w: 35, h: 35, dir: 1, minX: 600, maxX: 900, tipo: 'patrulheiro', vivo: true },
+                    { x: 1500, y: 340, w: 32, h: 32, startY: 340, angle: 1, tipo: 'voador', vivo: true },
+                    { x: 2400, y: 460, w: 35, h: 35, dir: -1, minX: 2200, maxX: 2600, tipo: 'patrulheiro', vivo: true }
+                ];
+            } else if (temaAtual === 4) {
+                inimigos = [
+                    { x: 600, y: 460, w: 35, h: 35, vy: 0, jumpTimer: 0, tipo: 'saltador', vivo: true },
+                    { x: 1300, y: 460, w: 35, h: 35, vy: 0, jumpTimer: 0, tipo: 'saltador', vivo: true },
+                    { x: 2100, y: 460, w: 35, h: 35, vy: 0, jumpTimer: 0, tipo: 'saltador', vivo: true }
+                ];
+            } else if (temaAtual === 5) {
+                inimigos = [
+                    { x: 750, y: 340, w: 32, h: 32, startY: 340, angle: 0, tipo: 'voador', vivo: true },
+                    { x: 1550, y: 460, w: 35, h: 35, dir: 1, minX: 1400, maxX: 1750, tipo: 'patrulheiro', vivo: true },
+                    { x: 2350, y: 340, w: 32, h: 32, startY: 340, angle: 2, tipo: 'voador', vivo: true }
+                ];
+            } else if (temaAtual === 6) {
+                inimigos = [
+                    { x: 600, y: 460, w: 35, h: 35, dir: 1, minX: 450, maxX: 800, tipo: 'patrulheiro', vivo: true },
+                    { x: 1200, y: 460, w: 35, h: 35, vy: 0, jumpTimer: 0, tipo: 'saltador', vivo: true },
+                    { x: 1900, y: 340, w: 32, h: 32, startY: 340, angle: 0, tipo: 'voador', vivo: true }
+                ];
+            } else if (temaAtual === 7) {
+                inimigos = [
+                    { x: 800, y: 460, w: 35, h: 35, dir: -1, minX: 650, maxX: 950, tipo: 'patrulheiro', vivo: true },
+                    { x: 1600, y: 460, w: 35, h: 35, vy: 0, jumpTimer: 0, tipo: 'saltador', vivo: true },
+                    { x: 2300, y: 460, w: 35, h: 35, dir: 1, minX: 2150, maxX: 2500, tipo: 'patrulheiro', vivo: true }
+                ];
+            } else {
+                inimigos = [
+                    { x: 700, y: 460, w: 35, h: 35, vy: 0, jumpTimer: 0, tipo: 'saltador', vivo: true },
+                    { x: 1400, y: 340, w: 32, h: 32, startY: 340, angle: 0, tipo: 'voador', vivo: true },
+                    { x: 2100, y: 460, w: 35, h: 35, vy: 0, jumpTimer: 0, tipo: 'saltador', vivo: true },
+                    { x: 2700, y: 340, w: 32, h: 32, startY: 340, angle: 1.5, tipo: 'voador', vivo: true }
+                ];
+            }
+
+            moedas = [
+                { x: 400, y: 440, pegou: false },
+                { x: 900, y: 300, pegou: false },
+                { x: 1400, y: 440, pegou: false },
+                { x: 1900, y: 300, pegou: false },
+                { x: 2400, y: 440, pegou: false },
+                { x: 2900, y: 440, pegou: false }
+            ];
+        }
+
+        window.addEventListener('keydown', e => {
+            keys[e.code] = true;
+            if ((e.code === 'KeyF' || e.code === 'ShiftLeft' || e.code === 'ShiftRight') && !emPausa) {
+                atirar();
+            }
+        });
+        window.addEventListener('keyup', e => keys[e.code] = false);
+
+        function atirar() {
+            if (municao <= 0) return;
+            municao--;
+            atualizarHUD();
+
+            projeteis.push({
+                x: player.facingRight ? player.x + player.w : player.x - 10,
+                y: player.y + player.h / 2 - 4,
+                w: 12,
+                h: 8,
+                vx: player.facingRight ? 8 : -8
+            });
+        }
+
+        function gameLoop() {
+            if (!emPausa) {
+                update();
+                render();
+            }
+            animFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        function update() {
+            if (keys['ArrowRight'] || keys['KeyD']) {
+                player.vx = player.speed;
+                player.facingRight = true;
+            } else if (keys['ArrowLeft'] || keys['KeyA']) {
+                player.vx = -player.speed;
+                player.facingRight = false;
+            } else {
+                player.vx = 0;
+            }
+
+            if ((keys['Space'] || keys['ArrowUp'] || keys['KeyW']) && player.grounded) {
+                player.vy = player.jumpPower;
+                player.grounded = false;
+            }
+
+            player.vy += gravity;
+
+            let prevY = player.y;
+
+            player.x += player.vx;
+            player.y += player.vy;
+
+            if (player.x < 0) player.x = 0;
+
+            if (player.y + player.h >= 495) {
+                player.y = 495 - player.h;
+                player.vy = 0;
+                player.grounded = true;
+            }
+
+            plataformas.forEach(plat => {
+                if (player.x + player.w > plat.x && player.x < plat.x + plat.w) {
+                    if (prevY + player.h <= plat.y && player.y + player.h >= plat.y) {
+                        player.y = plat.y - player.h;
+                        player.vy = 0;
+                        player.grounded = true;
+                    }
+                }
+            });
+
+            molas.forEach(mola => {
+                if (player.x + player.w > mola.x && player.x < mola.x + mola.w &&
+                    player.y + player.h >= mola.y && prevY + player.h <= mola.y + 10) {
+                    player.vy = -16.5;
+                    player.grounded = false;
+                    gerarParticulas(mola.x + 15, mola.y, '#00b894', 8);
+                }
+            });
+
+            blocos.forEach(b => {
+                if (player.x < b.x + b.w && player.x + player.w > b.x) {
+                    if (prevY + player.h <= b.y && player.y + player.h >= b.y) {
+                        player.y = b.y - player.h;
+                        player.vy = 0;
+                        player.grounded = true;
+                    }
+                    else if (player.vy < 0 && player.y < b.y + b.h && prevY >= b.y + b.h) {
+                        player.vy = 0;
+                        player.y = b.y + b.h;
+                        if (b.ativa) {
+                            b.ativa = false;
+                            ativarEfeitoBloco(b);
+                        }
+                    }
+                }
+            });
+
+            cameraX = player.x - 250;
+            if (cameraX < 0) cameraX = 0;
+            if (cameraX > MAP_WIDTH - canvas.width) cameraX = MAP_WIDTH - canvas.width;
+
+            projeteis.forEach((proj, pIdx) => {
+                proj.x += proj.vx;
+                
+                inimigos.forEach(i => {
+                    if (i.vivo && proj.x < i.x + i.w && proj.x + proj.w > i.x &&
+                        proj.y < i.y + i.h && proj.y + proj.h > i.y) {
+                        i.vivo = false;
+                        projeteis.splice(pIdx, 1);
+                        pontuacao += 35;
+                        atualizarHUD();
+                        gerarParticulas(i.x + i.w/2, i.y + i.h/2, '#ff7675', 12);
+                    }
+                });
+
+                if (proj.x < cameraX || proj.x > cameraX + canvas.width) {
+                    projeteis.splice(pIdx, 1);
+                }
+            });
+
+            inimigos.forEach(i => {
+                if (!i.vivo) return;
+
+                if (i.tipo === 'patrulheiro') {
+                    i.x += i.dir * 1.6;
+                    if (i.x <= i.minX || i.x >= i.maxX) i.dir *= -1;
+                } else if (i.tipo === 'saltador') {
+                    i.jumpTimer++;
+                    if (i.jumpTimer > 110) {
+                        i.vy = -10;
+                        i.jumpTimer = 0;
+                    }
+                    i.vy += gravity;
+                    i.y += i.vy;
+                    if (i.y >= 460) {
+                        i.y = 460;
+                        i.vy = 0;
+                    }
+                } else if (i.tipo === 'voador') {
+                    i.angle += 0.04;
+                    i.y = i.startY + Math.sin(i.angle) * 35;
+                    i.x += 0.8;
+                    if (i.x > MAP_WIDTH) i.x = 0;
+                }
+
+                if (player.x < i.x + i.w && player.x + player.w > i.x &&
+                    player.y < i.y + i.h && player.y + player.h > i.y) {
+                    
+                    if (player.vy > 0 && prevY + player.h <= i.y + 14) {
+                        i.vivo = false;
+                        player.vy = -7.5;
+                        pontuacao += 30;
+                        atualizarHUD();
+                        gerarParticulas(i.x + i.w/2, i.y + i.h/2, '#fd79a8', 10);
+                    } else {
+                        let pontosAntigos = pontuacao;
+                        pontuacao = Math.max(0, pontuacao - 15);
+                        atualizarHUD();
+                        player.x -= (player.facingRight ? 40 : -40);
+
+                        if (pontosAntigos > 0 && pontuacao === 0) {
+                            mostrarAviso("Fase Reiniciada!", "Sua pontuação chegou a 0 após o impacto! A fase foi reiniciada.", () => {
+                                resetarNivel();
+                                emPausa = false;
+                            });
+                        }
+                    }
+                }
+            });
+
+            municoesItems.forEach(m => {
+                if (!m.pegou && player.x < m.x + 20 && player.x + player.w > m.x &&
+                    player.y < m.y + 20 && player.y + player.h > m.y) {
+                    m.pegou = true;
+                    municao += 3;
+                    atualizarHUD();
+                    gerarParticulas(m.x + 10, m.y + 10, '#fdcb6e', 8);
+                }
+            });
+
+            moedas.forEach(m => {
+                if (!m.pegou && player.x < m.x + 22 && player.x + player.w > m.x &&
+                    player.y < m.y + 22 && player.y + player.h > m.y) {
+                    m.pegou = true;
+                    pontuacao += 15;
+                    atualizarHUD();
+                    gerarParticulas(m.x + 11, m.y + 11, '#ffeaa7', 6);
+                }
+            });
+
+            particulas.forEach((p, index) => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.alpha -= 0.03;
+                if (p.alpha <= 0) particulas.splice(index, 1);
+            });
+
+            if (player.x >= MAP_WIDTH - 120) {
+                let pendentes = blocos.filter(b => b.tipo === 'pergunta' && b.ativa).length;
+                if (pendentes > 0) {
+                    player.x = MAP_WIDTH - 160;
+                    mostrarAviso("Atenção!", `Você precisa responder a todos os blocos de perguntas antes de terminar! Faltam ${pendentes} blocos.`, () => { emPausa = false; });
+                } else {
+                    concluirFase();
+                }
+            }
+        }
+
+        function gerarParticulas(x, y, cor, qtd) {
+            for (let i = 0; i < qtd; i++) {
+                particulas.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 6,
+                    vy: (Math.random() - 0.5) * 6,
+                    color: cor,
+                    alpha: 1.0
+                });
+            }
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.save();
+            ctx.translate(-cameraX, 0);
+
+            // [PIXEL ART] Chão (Background/Terreno inferior)
+            ctx.fillStyle = '#2d3436';
+            ctx.fillRect(0, 495, MAP_WIDTH, 65);
+            ctx.fillStyle = '#00b894';
+            ctx.fillRect(0, 495, MAP_WIDTH, 8);
+
+            plataformas.forEach(plat => {
+                // [PIXEL ART] Plataformas flutuantes
+                ctx.fillStyle = '#6c5ce7';
+                ctx.fillRect(plat.x, plat.y, plat.w, plat.h);
+                ctx.fillStyle = '#a29bfe';
+                ctx.fillRect(plat.x, plat.y, plat.w, 4);
+            });
+
+            molas.forEach(mola => {
+                // [PIXEL ART] Molas / Impulsos
+                ctx.fillStyle = '#00b894';
+                ctx.fillRect(mola.x, mola.y, mola.w, mola.h);
+                ctx.fillStyle = '#55efc4';
+                ctx.fillRect(mola.x + 3, mola.y, mola.w - 6, 4);
+            });
+
+            blocos.forEach(b => desenharBloco(b));
+
+            municoesItems.forEach(m => {
+                if (!m.pegou) {
+                    // [PIXEL ART] Itens de Munição (Ícones / Sprites)
+                    ctx.fillStyle = '#fdcb6e';
+                    ctx.fillRect(m.x, m.y, 16, 16);
+                    ctx.fillStyle = '#d63031';
+                    ctx.fillText('⚡', m.x + 2, m.y + 13);
+                }
+            });
+
+            inimigos.forEach(i => {
+                if (i.vivo) desenharInimigo(i);
+            });
+
+            moedas.forEach(m => {
+                if (!m.pegou) desenharMoeda(m);
+            });
+
+            ctx.fillStyle = '#00ffff';
+            projeteis.forEach(p => {
+                // [PIXEL ART] Projéteis / Tiros disparados pelo jogador
+                ctx.fillRect(p.x, p.y, p.w, p.h);
+            });
+
+            particulas.forEach(p => {
+                ctx.globalAlpha = p.alpha;
+                ctx.fillStyle = p.color;
+                ctx.fillRect(p.x, p.y, 4, 4);
+            });
+            ctx.globalAlpha = 1.0;
+
+            desenharJogador(player);
+
+            // [PIXEL ART] Linha de Chegada / Portal final da fase
+            ctx.fillStyle = '#00b894';
+            ctx.fillRect(MAP_WIDTH - 100, 395, 12, 100);
+
+            ctx.restore();
+        }
+
+        function desenharJogador(p) {
+            // [PIXEL ART] Jogador (Substituir retângulo/canvas por `ctx.drawImage` quando tiver as imagens sprite)
+            ctx.fillStyle = generoPersonagem === 'M' ? '#0984e3' : '#e84393';
+            ctx.fillRect(p.x, p.y, p.w, p.h);
+            ctx.fillStyle = '#fff';
+            let eyeX = p.facingRight ? p.x + 22 : p.x + 6;
+            ctx.fillRect(eyeX, p.y + 8, 6, 6);
+        }
+
+        function desenharBloco(b) {
+            // [PIXEL ART] Blocos interativos (caixas de perguntas/desafios)
+            ctx.fillStyle = b.ativa ? '#fdcb6e' : '#636e72';
+            ctx.fillRect(b.x, b.y, b.w, b.h);
+            ctx.strokeStyle = '#000';
+            ctx.strokeRect(b.x, b.y, b.w, b.h);
+
+            if (b.ativa) {
+                ctx.fillStyle = '#d63031';
+                ctx.font = 'bold 18px sans-serif';
+                let simbolo = b.tipo === 'pergunta' ? '?' : '•';
+                ctx.fillText(simbolo, b.x + 13, b.y + 27);
+            }
+        }
+
+        function desenharInimigo(i) {
+            // [PIXEL ART] Inimigos (Patrulheiros, Saltadores e Voadores)
+            if (i.tipo === 'patrulheiro') ctx.fillStyle = '#e17055';
+            else if (i.tipo === 'saltador') ctx.fillStyle = '#d63031';
+            else if (i.tipo === 'voador') ctx.fillStyle = '#a29bfe';
+
+            ctx.fillRect(i.x, i.y, i.w, i.h);
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(i.x + 5, i.y + 7, 6, 6);
+            ctx.fillRect(i.x + i.w - 11, i.y + 7, 6, 6);
+        }
+
+        function desenharMoeda(m) {
+            // [PIXEL ART] Moedas / Colecionáveis espalhados pelo mapa
+            ctx.fillStyle = '#ffeaa7';
+            ctx.beginPath();
+            ctx.arc(m.x + 11, m.y + 11, 10, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function ativarEfeitoBloco(b) {
+            if (b.tipo === 'pergunta') {
+                abrirPerguntaOuDesafio();
+            }
+        }
+
+        function abrirPerguntaOuDesafio() {
+            emPausa = true;
+            let container = document.getElementById('opcoes-container');
+            container.innerHTML = '';
+
+            let pData;
+            if (noLimbo) {
+                pData = perguntasLimbo[indiceLimbo];
+                document.getElementById('modal-titulo').innerText = "PROVA DO LIMBO";
+            } else {
+                document.getElementById('modal-titulo').innerText = `PERGUNTA - TEMA ${temaAtual}`;
+                let lista = perguntasPorTema[temaAtual] || perguntasPorTema[1];
+                pData = lista[Math.floor(Math.random() * lista.length)];
+            }
+
+            document.getElementById('pergunta-texto').innerText = pData.p;
+
+            pData.opts.forEach((opt, idx) => {
+                let btn = document.createElement('button');
+                btn.className = 'btn-opcao';
+                btn.innerText = opt;
+                btn.setAttribute('tabindex', '0');
+
+                btn.onkeydown = (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        responder(idx === pData.resp);
+                    } else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                        e.preventDefault();
+                        let next = btn.nextElementSibling;
+                        if (next) next.focus();
+                    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        let prev = btn.previousElementSibling;
+                        if (prev) prev.focus();
+                    }
+                };
+
+                btn.onclick = () => responder(idx === pData.resp);
+                container.appendChild(btn);
+            });
+
+            document.getElementById('modal-pergunta').classList.remove('hidden');
+            
+            setTimeout(() => {
+                let primeiroBtn = container.querySelector('.btn-opcao');
+                if (primeiroBtn) primeiroBtn.focus();
+            }, 100);
+        }
+
+        function responder(correta) {
+            document.getElementById('modal-pergunta').classList.add('hidden');
+
+            if (noLimbo) {
+                if (correta) {
+                    indiceLimbo++;
+                    if (indiceLimbo >= 7) {
+                        mostrarAviso("Você Venceu o Limbo!", "Parabéns! Você superou o Limbo com sucesso. Continuando a fase atual...", () => {
+                            noLimbo = false;
+                            errosFaseAtual = 0;
+                            atualizarHUD();
+                            emPausa = false;
+                        });
+                    } else {
+                        abrirPerguntaOuDesafio();
+                    }
+                } else {
+                    mostrarAviso("Fim de Jogo!", "Você errou no Limbo. Seus pontos foram zerados e o jogo voltou ao menu.", () => {
+                        pontuacao = 0;
+                        fasesLiberadas = [1];
+                        reiniciarParaMenu();
+                    });
+                }
+                return;
+            }
+
+            if (correta) {
+                pontuacao += 40;
+                atualizarHUD();
+                emPausa = false;
+            } else {
+                errosFaseAtual++;
+                atualizarHUD();
+
+                if (errosFaseAtual >= 2) {
+                    mostrarAviso("ALERTA DE LIMBO!", "Você errou 2 perguntas nesta fase e foi enviado IMEDIATAMENTE para o LIMBO!", () => {
+                        iniciarLimbo();
+                    });
+                } else {
+                    emPausa = false;
+                }
+            }
+        }
+
+        function iniciarLimbo() {
+            noLimbo = true;
+            indiceLimbo = 0;
+            atualizarHUD();
+            abrirPerguntaOuDesafio();
+        }
+
+        function concluirFase() {
+            emPausa = true;
+            
+            if (temaAtual === 8) {
+                // Se completou a última fase, exibe a tela de agradecimento bonitinha
+                document.getElementById('game-screen').classList.add('hidden');
+                document.getElementById('final-score-val').innerText = pontuacao;
+                document.getElementById('tela-agradecimento').classList.remove('hidden');
+                return;
+            }
+
+            if (temaAtual < 8 && !fasesLiberadas.includes(temaAtual + 1)) {
+                fasesLiberadas.push(temaAtual + 1);
+            }
+            player.x = 50; 
+
+            mostrarAviso(`Fase ${temaAtual} Concluída!`, `Parabéns! Você completou a fase e acumulou ${pontuacao} pontos.`, () => {
+                reiniciarParaMenu();
+            });
+        }
+
+        function voltarAoMenuPrincipal() {
+            document.getElementById('tela-agradecimento').classList.add('hidden');
+            pontuacao = 0;
+            fasesLiberadas = [1];
+            document.getElementById('menu-personagem').classList.remove('hidden');
+        }
+
+        function reiniciarParaMenu() {
+            emPausa = false;
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('menu-fases').classList.remove('hidden');
+            gerarBotoesFase();
+        }
+
+        function mostrarAviso(titulo, msg, aoFechar) {
+            emPausa = true;
+            document.getElementById('modal-titulo').innerText = titulo;
+            document.getElementById('pergunta-texto').innerText = msg;
+            let container = document.getElementById('opcoes-container');
+            container.innerHTML = '';
+            
+            let btn = document.createElement('button');
+            btn.className = 'btn-opcao';
+            btn.innerText = 'Continuar (Clique aqui ou Enter)';
+            btn.setAttribute('tabindex', '0');
+            
+            const fechar = () => {
+                document.getElementById('modal-pergunta').classList.add('hidden');
+                if (aoFechar) aoFechar();
+            };
+
+            btn.onkeydown = (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    fechar();
+                }
+            };
+            btn.onclick = fechar;
+            container.appendChild(btn);
+            document.getElementById('modal-pergunta').classList.remove('hidden');
+            
+            setTimeout(() => {
+                btn.focus();
+            }, 100);
+        }
+    </script>
+</body>
+</html>
