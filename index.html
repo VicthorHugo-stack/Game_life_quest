@@ -37,15 +37,35 @@
         .agradecimento-box { text-align: center; background: linear-gradient(135deg, #1b172a, #110e1b); border: 2px solid #ff4757; padding: 50px; border-radius: 24px; box-shadow: 0 0 45px rgba(255, 71, 87, 0.45); max-width: 750px; width: 90%; }
         .agradecimento-box p { font-size: 16px; line-height: 1.7; margin-bottom: 22px; color: #dcdde1; }
         .pontos-final { font-size: 30px; color: #ffa502; font-weight: 700; margin: 20px 0 30px 0; background: rgba(255, 165, 2, 0.1); padding: 12px; border-radius: 12px; border: 1px dashed #ffa502; }
+
+        /* TV DVD Bouncing Banner Style */
+        #tv-dvd-banner {
+            position: absolute;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.85);
+            border: 2px solid #00cec9;
+            color: #00cec9;
+            font-size: 24px;
+            font-weight: 800;
+            border-radius: 8px;
+            box-shadow: 0 0 15px #00cec9, inset 0 0 10px #00cec9;
+            z-index: 99;
+            pointer-events: none;
+            letter-spacing: 2px;
+            font-family: monospace;
+            text-shadow: 0 0 8px #00cec9;
+        }
     </style>
 </head>
 <body>
     <div id="game-container">
         
+        <div id="tv-dvd-banner" class="hidden">VICTHOR</div>
+
         <div id="menu-personagem" class="screen">
             <h1>Life Quest - Desenvolvido por Turma 218.<br>
                 <span style="font-size: 18px; color: #ffa502; font-weight: 400;">
-                    🎁Para melhor experiencia aperte f12 e seja curioso ?
+                    🎁 Para melhor experiência aperte F12 e seja curioso?
                 </span><br><br>
                 Escolha o seu personagem para iniciar:
             </h1>
@@ -119,30 +139,39 @@
             1: [
                 { id: "1_1", p: "Qual é a principal característica do trabalho digital?", opts: ["Trabalho remoto e conectividade online", "Extinção completa das fábricas físicas", "Fim da necessidade de estudar", "Uso apenas de ferramentas manuais"], respCorreta: "Trabalho remoto e conectividade online" },
                 { id: "1_2", p: "O mercado digital prioriza o quê em seus serviços?", opts: ["Fluxo de dados e conhecimento", "Produção exclusivamente manual", "Eliminação do uso de computadores", "Isolamento total dos trabalhadores"], respCorreta: "Fluxo de dados e conhecimento" },
-                { id: "1_3", p: "Como a digitalização alterou o trabalho moderno?", opts: ["Exigindo aprendizado contínuo", "Exigindo presença física em 100% dos casos", "Eliminando o fator humano", "Proibindo a comunicação em equipe"], respCorreta: "Exigindo aprendizado contínuo" }
+                { id: "1_3", p: "Como a digitalização alterou o trabalho moderno?", opts: ["Exigindo aprendizado contínuo", "Exigindo presença física em 100% dos casos", "Eliminando o fator humano", "Proibindo a comunicação em equipe"], respCorreta: "Exigindo aprendizado contínuo" },
+                { id: "1_4", p: "O que permitiu a expansão do teletrabalho mundialmente?", opts: ["Avanço da internet e computação em nuvem", "Aumento da tração animal", "Uso exclusivo de máquinas a vapor", "Queda no uso de smartphones"], respCorreta: "Avanço da internet e computação em nuvem" }
             ],
             2: [
                 { id: "2_1", p: "Qual habilidade é muito valorizada no futuro do trabalho?", opts: ["Criatividade e raciocínio crítico", "Repetição mecânica de tarefas", "Isolamento sem comunicação", "Apenas força física"], respCorreta: "Criatividade e raciocínio crítico" },
-                { id: "2_2", p: "Exemplo de profissão em alta na área tecnológica:", opts: ["Especialista em inteligência artificial", "Operador de máquina manual", "Arquivista de papéis analógicos", "Atendente sem acesso à internet"], respCorreta: "Especialista em inteligência artificial" }
+                { id: "2_2", p: "Exemplo de profissão em alta na área tecnológica:", opts: ["Especialista em inteligência artificial", "Operador de máquina manual", "Arquivista de papéis analógicos", "Atendente sem acesso à internet"], respCorreta: "Especialista em inteligência artificial" },
+                { id: "2_3", p: "O conceito de 'Lifelong Learning' se refere a:", opts: ["Aprendizado contínuo ao longo da vida", "Estudar somente até os 18 anos", "Aprender uma única habilidade técnica", "Aprender sem utilizar tecnologia"], respCorreta: "Aprendizado contínuo ao longo da vida" }
             ],
             3: [
                 { id: "3_1", p: "O que as empresas mais buscam em jovens profissionais?", opts: ["Proatividade e vontade de aprender", "Fazer apenas o mínimo necessário", "Chegar sempre atrasado", "Evitar desafios ou tarefas novas"], respCorreta: "Proatividade e vontade de aprender" },
-                { id: "3_2", p: "Como manter uma boa empregabilidade?", opts: ["Atualizando seus conhecimentos sempre", "Dependendo apenas de indicações", "Aceitando qualquer condição sem planejar", "Evitando cursos e qualificações"], respCorreta: "Atualizando seus conhecimentos sempre" }
+                { id: "3_2", p: "Como manter uma boa empregabilidade?", opts: ["Atualizando seus conhecimentos sempre", "Dependendo apenas de indicações", "Aceitando qualquer condição sem planejar", "Evitando cursos e qualificações"], respCorreta: "Atualizando seus conhecimentos sempre" },
+                { id: "3_3", p: "Um portfólio de projetos serve essencialmente para:", opts: ["Demonstrar na prática suas competências", "Guardar documentos pessoais", "Substituir o diploma universitário obrigatoriamente", "Apenas acumular certificados sem uso"], respCorreta: "Demonstrar na prática suas competências" }
             ],
             4: [
-                { id: "4_1", p: "O que são Soft Skills?", opts: ["Habilidades comportamentais e relacionais", "Programação de computadores avançada", "Força física para trabalhos pesados", "Conhecimentos exclusivamente de matemática"], respCorreta: "Habilidades comportamentais e relacionais" }
+                { id: "4_1", p: "O que são Soft Skills?", opts: ["Habilidades comportamentais e relacionais", "Programação de computadores avançada", "Força física para trabalhos pesados", "Conhecimentos exclusivamente de matemática"], respCorreta: "Habilidades comportamentais e relacionais" },
+                { id: "4_2", p: "Qual das opções é um exemplo direto de Soft Skill?", opts: ["Empatia e escuta ativa", "Digitação ultra rápida", "Operação de empilhadeiras", "Manutenção de circuitos elétricos"], respCorreta: "Empatia e escuta ativa" },
+                { id: "4_3", p: "Trabalhar bem em equipe requer principalmente:", opts: ["Respeito e boa comunicação", "Impor opiniões sem ouvir os outros", "Fazer todo o trabalho sozinho", "Delegar todas as suas tarefas"], respCorreta: "Respeito e boa comunicação" }
             ],
             5: [
-                { id: "5_1", p: "Qual uma vantagem e um desafio do trabalho autônomo?", opts: ["Autonomia de tempo e renda instável", "Salário fixo garantido por lei", "Isenção total de impostos", "Aposentadoria automática sem pagar nada"], respCorreta: "Autonomia de tempo e renda instável" }
+                { id: "5_1", p: "Qual uma vantagem e um desafio do trabalho autônomo?", opts: ["Autonomia de tempo e renda instável", "Salário fixo garantido por lei", "Isenção total de impostos", "Aposentadoria automática sem pagar nada"], respCorreta: "Autonomia de tempo e renda instável" },
+                { id: "5_2", p: "O que caracteriza a Economia Criativa?", opts: ["Atividades baseadas em capital intelectual e cultura", "Fábricas de montagem pesada", "Extração exclusiva de minérios", "Comércio tradicional não digitalizado"], respCorreta: "Atividades baseadas em capital intelectual e cultura" }
             ],
             6: [
-                { id: "6_1", p: "Como a IA impacta as profissões atuais?", opts: ["Automatizando tarefas repetitivas", "Eliminando todo tipo de trabalho humano", "Paralisando a economia mundial", "Impactando apenas quem não usa computador"], respCorreta: "Automatizando tarefas repetitivas" }
+                { id: "6_1", p: "Como a IA impacta as profissões atuais?", opts: ["Automatizando tarefas repetitivas", "Eliminando todo tipo de trabalho humano", "Paralisando a economia mundial", "Impactando apenas quem não usa computador"], respCorreta: "Automatizando tarefas repetitivas" },
+                { id: "6_2", p: "A automação de processos visa prioritariamente:", opts: ["Aumentar a eficiência e reduzir erros operacionais", "Substituir 100% da liderança humana", "Tornar os processos mais lentos", "Gastar mais recursos financeiros"], respCorreta: "Aumentar a eficiência e reduzir erros operacionais" }
             ],
             7: [
-                { id: "7_1", p: "O que dificulta a entrada de jovens no primeiro emprego?", opts: ["Desigualdade no acesso à educação e tecnologia", "Falta de vagas no mundo inteiro", "Falta de interesse dos jovens", "Excesso de qualificação no mercado"], respCorreta: "Desigualdade no acesso à educação e tecnologia" }
+                { id: "7_1", p: "O que dificulta a entrada de jovens no primeiro emprego?", opts: ["Desigualdade no acesso à educação e tecnologia", "Falta de vagas no mundo inteiro", "Falta de interesse dos jovens", "Excesso de qualificação no mercado"], respCorreta: "Desigualdade no acesso à educação e tecnologia" },
+                { id: "7_2", p: "Programas de Aprendizagem (Jovem Aprendiz) buscam:", opts: ["Inserção profissional aliada à capacitação teórica", "Trabalho sem remuneração", "Substituir cargos executivos por jovens", "Impedir o jovem de continuar estudando"], respCorreta: "Inserção profissional aliada à capacitação teórica" }
             ],
             8: [
-                { id: "8_1", p: "[EXTREMO] Qual a função das leis trabalhistas?", opts: ["Garantir condições dignas de trabalho", "Dar privilégios apenas ao patrão", "Inviabilizar as empresas", "Proibir a contratação de jovens"], respCorreta: "Garantir condições dignas de trabalho" }
+                { id: "8_1", p: "[EXTREMO] Qual a função das leis trabalhistas?", opts: ["Garantir condições dignas de trabalho", "Dar privilégios apenas ao patrão", "Inviabilizar as empresas", "Proibir a contratação de jovens"], respCorreta: "Garantir condições dignas de trabalho" },
+                { id: "8_2", p: "[EXTREMO] Qual pilar fundamental garante a saúde mental no trabalho?", opts: ["Equilíbrio entre vida pessoal e profissional", "Jornadas de 18 horas diárias", "Eliminação das férias anuais", "Metas inalcançáveis contínuas"], respCorreta: "Equilíbrio entre vida pessoal e profissional" }
             ]
         };
 
@@ -154,6 +183,7 @@
         let perguntasJaRespondidas = new Set();
         let presenteVicthorAtivo = false;
         let primeiroBlocoAcertado = false;
+        let usouSuperPulo = false;
 
         let generoPersonagem = 'M';
         let temaAtual = 1;
@@ -176,11 +206,17 @@
         let timerInterval = null;
         let perguntaAtualObjeto = null;
 
+        // Variaveis da animação DVD Victhor
+        let dvdX = 100, dvdY = 100;
+        let dvdVx = 3, dvdVy = 3;
+        const dvdWidth = 140, dvdHeight = 50;
+        const colorsDVD = ['#00cec9', '#ff4757', '#ffa502', '#2ed573', '#a29bfe', '#e84393'];
+
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
         const MAP_WIDTH = 5500;
-        const META_X = 5300; // Limite seguro para a chegada
+        const META_X = 5300;
         let cameraX = 0;
 
         let player = {
@@ -247,9 +283,11 @@
             habilidadeUsoDisponivel = true;
             escudoAtivo = false;
             primeiroBlocoAcertado = false;
+            usouSuperPulo = false;
 
             if (temaAtual === 8) {
                 presenteVicthorAtivo = false;
+                document.getElementById('tv-dvd-banner').classList.add('hidden');
             }
             
             document.getElementById('menu-fases').classList.add('hidden');
@@ -264,13 +302,13 @@
 
         function atualizarHUD() {
             document.getElementById('score-val').innerText = presenteVicthorAtivo ? "∞" : pontuacao;
-            document.getElementById('ammo-val').innerText = (temaAtual === 8) ? "0 (Sem Tiros)" : municao;
+            document.getElementById('ammo-val').innerText = presenteVicthorAtivo ? "∞" : ((temaAtual === 8) ? "0 (Sem Tiros)" : municao);
             document.getElementById('erros-val').innerText = `${errosFaseAtual}/2`;
             document.getElementById('fase-val').innerText = noLimbo ? "LIMBO" : temaAtual;
             
             let statusEl = document.getElementById('status-val');
             if (presenteVicthorAtivo) {
-                statusEl.innerText = "PRESENTE DO DESENVOLVEDOR VICTHOR 🎁 (PAZ)";
+                statusEl.innerText = "PRESENTE DO DESENVOLVEDOR VICTHOR 🎁 (HACK ATIVO)";
                 statusEl.style.color = "#00cec9";
             } else {
                 statusEl.innerText = "Normal";
@@ -278,7 +316,10 @@
             }
 
             let habEl = document.getElementById('hab-val');
-            if (escudoAtivo) {
+            if (presenteVicthorAtivo) {
+                habEl.innerText = "INFINITA ⚡";
+                habEl.style.color = "#00cec9";
+            } else if (escudoAtivo) {
                 habEl.innerText = "ATIVO!";
                 habEl.style.color = "#ff4757";
             } else if (habilidadeUsoDisponivel) {
@@ -291,8 +332,13 @@
         }
 
         function usarHabilidadeEspecial() {
-            if (!habilidadeUsoDisponivel || emPausa) return;
-            habilidadeUsoDisponivel = false;
+            if ((!habilidadeUsoDisponivel && !presenteVicthorAtivo) || emPausa) return;
+            
+            if (!presenteVicthorAtivo) {
+                habilidadeUsoDisponivel = false;
+            }
+
+            usouSuperPulo = true;
 
             if (generoPersonagem === 'F') {
                 escudoAtivo = true;
@@ -328,7 +374,6 @@
             gerarParticulas(player.x + player.w/2, player.y + player.h/2, '#2ed573', 25);
         }
 
-        // FUNÇÃO DE VERIFICAÇÃO DE COLISÃO COM PLATAFORMAS (EVITA GERAR SOBRE PLATAFORMAS)
         function estaSobrePlataforma(x, y, w, h) {
             let colliders = [...plataformas, ...plataformasMoveis];
             for (let p of colliders) {
@@ -349,57 +394,55 @@
             particulas = [];
             habilidadeUsoDisponivel = true;
             escudoAtivo = false;
+            usouSuperPulo = false;
 
             if (temaAtual === 8) municao = 0;
 
             let seed = temaAtual * 137;
 
-            // 1. PLATAFORMAS FIXAS
+            // 1. PLATAFORMAS FIXAS (Geração customizada por Fase)
             plataformas = [];
-            let qtdPlatFixas = 5 + (temaAtual % 3);
+            let qtdPlatFixas = 6 + (temaAtual % 3);
             for (let i = 0; i < qtdPlatFixas; i++) {
-                let px = 450 + (i * 850) + ((temaAtual * 60) % 200);
-                if (px < META_X - 150) {
-                    plataformas.push({
-                        x: px,
-                        y: 430 - ((i * 35) % 110),
-                        w: 130,
-                        h: 20
-                    });
+                let px = 400 + (i * 800) + ((temaAtual * 75 + i * 40) % 220);
+                let py = 480 - ((i * 45 + temaAtual * 20) % 180);
+                let pw = 120 + ((i * 30 + temaAtual * 15) % 80);
+                if (px < META_X - 200) {
+                    plataformas.push({ x: px, y: py, w: pw, h: 20 });
                 }
             }
 
-            // 2. PLATAFORMAS MÓVEIS
+            // 2. PLATAFORMAS MÓVEIS (Variação de padrão)
             plataformasMoveis = [];
-            let qtdPlatMoveis = 4 + (temaAtual % 2);
+            let qtdPlatMoveis = 4 + (temaAtual % 3);
             for (let i = 0; i < qtdPlatMoveis; i++) {
-                let px = 700 + (i * 950) + ((temaAtual * 50 * (i+1)) % 150);
-                if (px < META_X - 180) {
-                    let py = 390 - ((i * 30) + (temaAtual * 5)) % 90;
+                let px = 650 + (i * 920) + ((temaAtual * 80) % 180);
+                if (px < META_X - 200) {
+                    let py = 420 - ((i * 40 + temaAtual * 12) % 160);
                     plataformasMoveis.push({
                         x: px,
                         y: py,
                         w: 110,
                         h: 20,
-                        minX: px - 80,
-                        maxX: px + 120,
-                        speed: 1.8 + (temaAtual * 0.08),
-                        dir: 1
+                        minX: px - (80 + (i % 2) * 40),
+                        maxX: px + (100 + (i % 2) * 50),
+                        speed: 1.8 + (temaAtual * 0.1),
+                        dir: (i % 2 === 0) ? 1 : -1
                     });
                 }
             }
 
-            // 3. BURACOS (Limitados estritamente antes da meta)
+            // 3. BURACOS (Layout alternado rigorosamente antes da meta)
             buracos = [];
             let qtdBuracos = 4 + (temaAtual % 3);
-            let offsetBuraco = 800;
+            let offsetBuraco = 750 + (temaAtual * 30 % 150);
             
             for (let i = 0; i < qtdBuracos; i++) {
-                let bx = offsetBuraco + (i * 900) + ((i * seed) % 100);
-                if (bx < META_X - 250) {
+                let bx = offsetBuraco + (i * 880) + ((i * seed) % 120);
+                if (bx < META_X - 300) {
                     buracos.push({
                         x: bx,
-                        w: 100 + (temaAtual * 2),
+                        w: 110 + (temaAtual * 3),
                         ePrimeiro: (i === 0)
                     });
                 }
@@ -409,33 +452,31 @@
             espinhos = [];
             let qtdEspinhos = 4 + (temaAtual % 2);
             for (let i = 0; i < qtdEspinhos; i++) {
-                let ex = 950 + (i * 900) + ((temaAtual * 50) % 120);
-                if (ex < META_X - 150) {
-                    espinhos.push({ x: ex, y: 625, w: 40, h: 20 });
+                let ex = 900 + (i * 850) + ((temaAtual * 60) % 140);
+                if (ex < META_X - 200) {
+                    espinhos.push({ x: ex, y: 625, w: 45, h: 20 });
                 }
             }
 
-            // 5. BLOCOS DE PERGUNTAS E RECARGA (Garantidos acessíveis e ANTES DA META)
+            // 5. BLOCOS DE PERGUNTAS E RECARGA (Posicionamento corrigido para fácil alcance)
             blocos = [];
-            let numBlocos = 6 + (temaAtual % 3);
+            let numBlocos = 6 + (temaAtual % 2);
             for (let i = 0; i < numBlocos; i++) {
                 let bx;
                 if (i === 0) {
-                    bx = 450;
+                    bx = 420;
                 } else {
-                    bx = 600 + (i * 700) + ((temaAtual * i * 30) % 150);
+                    bx = 600 + (i * 720) + ((temaAtual * i * 35) % 160);
                 }
 
-                // Restringe rigorosamente para nunca ultrapassar a linha de chegada
-                if (bx > META_X - 100) bx = META_X - 150 - (i * 40);
+                if (bx > META_X - 150) bx = META_X - 200 - (i * 50);
 
-                let by = 380 - ((i * 20 + temaAtual * 8) % 85);
+                let by = 480 - ((i * 25 + temaAtual * 10) % 90);
                 let eRecarga = (i % 2 === 1);
                 
-                // Assegura que o bloco não spawne em cima de plataformas
                 let tentativas = 0;
                 while (estaSobrePlataforma(bx, by, 45, 45) && tentativas < 5) {
-                    by -= 45;
+                    by -= 50;
                     tentativas++;
                 }
 
@@ -454,8 +495,8 @@
             molas = [];
             let qtdMolas = 3;
             for (let i = 0; i < qtdMolas; i++) {
-                let mx = 750 + (i * 1300) + ((temaAtual * 70) % 200);
-                if (mx < META_X - 150) {
+                let mx = 800 + (i * 1250) + ((temaAtual * 50) % 180);
+                if (mx < META_X - 200) {
                     molas.push({ x: mx, y: 620, w: 35, h: 25 });
                 }
             }
@@ -464,8 +505,8 @@
             municoesItems = [];
             let qtdMunicao = 5;
             for (let i = 0; i < qtdMunicao; i++) {
-                let mux = 600 + (i * 1000) + ((temaAtual * 60) % 150);
-                if (mux < META_X - 100) {
+                let mux = 550 + (i * 950) + ((temaAtual * 70) % 160);
+                if (mux < META_X - 150) {
                     municoesItems.push({ x: mux, y: 590, pegou: false });
                 }
             }
@@ -485,7 +526,7 @@
                 else if (mod === 5) { tipo = 'voador'; cor = '#74b9ff'; }
 
                 let posX = 650 + (i * 650) + ((temaAtual * 30) % 120);
-                if (posX < META_X - 120) {
+                if (posX < META_X - 150) {
                     let posY = (tipo === 'voador') ? 260 + ((i * 20) % 70) : 605;
 
                     inimigos.push({
@@ -499,14 +540,14 @@
                 }
             }
 
-            // 9. MOEDAS (Respeitando a margem da meta)
+            // 9. MOEDAS
             moedas = [];
             for (let i = 0; i < 12; i++) {
-                let mox = 400 + (i * 420) + ((temaAtual * 25) % 80);
-                if (mox < META_X - 80) {
+                let mox = 380 + (i * 410) + ((temaAtual * 30) % 90);
+                if (mox < META_X - 100) {
                     moedas.push({ 
                         x: mox, 
-                        y: 380 + ((i * 12) % 60), 
+                        y: 380 + ((i * 15) % 70), 
                         pegou: false 
                     });
                 }
@@ -516,7 +557,7 @@
         window.addEventListener('keydown', e => {
             keys[e.code] = true;
             if ((e.code === 'KeyF' || e.code === 'ShiftLeft' || e.code === 'ShiftRight') && !emPausa) {
-                if (temaAtual !== 8) atirar();
+                if (temaAtual !== 8 || presenteVicthorAtivo) atirar();
             }
             if (e.code === 'KeyE' && !emPausa) {
                 usarHabilidadeEspecial();
@@ -525,8 +566,8 @@
         window.addEventListener('keyup', e => keys[e.code] = false);
 
         function atirar() {
-            if (municao <= 0) return;
-            municao--;
+            if (municao <= 0 && !presenteVicthorAtivo) return;
+            if (!presenteVicthorAtivo) municao--;
             atualizarHUD();
 
             projeteis.push({
@@ -542,8 +583,42 @@
             if (!emPausa) {
                 update();
                 render();
+                if (presenteVicthorAtivo) {
+                    atualizarBannerDVD();
+                }
             }
             animFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        function atualizarBannerDVD() {
+            const banner = document.getElementById('tv-dvd-banner');
+            banner.classList.remove('hidden');
+
+            let containerWidth = 1280;
+            let containerHeight = 720;
+
+            dvdX += dvdVx;
+            dvdY += dvdVy;
+
+            if (dvdX <= 0 || dvdX + dvdWidth >= containerWidth) {
+                dvdVx *= -1;
+                mudarCorDVD(banner);
+            }
+            if (dvdY <= 0 || dvdY + dvdHeight >= containerHeight) {
+                dvdVy *= -1;
+                mudarCorDVD(banner);
+            }
+
+            banner.style.left = dvdX + 'px';
+            banner.style.top = dvdY + 'px';
+        }
+
+        function mudarCorDVD(el) {
+            let cor = colorsDVD[Math.floor(Math.random() * colorsDVD.length)];
+            el.style.color = cor;
+            el.style.borderColor = cor;
+            el.style.boxShadow = `0 0 15px ${cor}, inset 0 0 10px ${cor}`;
+            el.style.textShadow = `0 0 8px ${cor}`;
         }
 
         function update() {
@@ -591,7 +666,7 @@
 
             player.vy += gravity;
 
-            if (escudoAtivo) {
+            if (escudoAtivo && !presenteVicthorAtivo) {
                 escudoTimer--;
                 if (escudoTimer <= 0) {
                     escudoAtivo = false;
@@ -647,11 +722,13 @@
 
                 if (emCimaDeBuraco) {
                     if (player.y > 720) {
-                        if (caiuNoPrimeiro && primeiroBlocoAcertado && temaAtual < 8 && !presenteVicthorAtivo) {
+                        // CONDIÇÃO DO HACK VICTHOR RIGOROSA:
+                        // Acertar a pergunta do primeiro bloco + Usar Super Pulo [E] no primeiro bloco + Tacar no primeiro buraco
+                        if (caiuNoPrimeiro && primeiroBlocoAcertado && usouSuperPulo && temaAtual < 8 && !presenteVicthorAtivo) {
                             presenteVicthorAtivo = true;
                             atualizarHUD();
                             inimigos.forEach(i => i.vivo = false);
-                            mostrarAviso("O PRESENTE DO DESENVOLVEDOR VICTHOR ATIVADO!", "Você acertou o primeiro bloco e caiu no primeiro buraco de forma consciente! Todos os bixos sumiram, imunidade garantida e caminho livre até a Fase 8!", () => {
+                            mostrarAviso("O PRESENTE DO DESENVOLVEDOR VICTHOR ATIVADO!", "Você ativou a sequência secreta! O Hack do Victhor está ativo: Munição e Habilidade Infinitas e Paz Absoluta no mapa!", () => {
                                 emPausa = false;
                             });
                         } else {
@@ -1229,6 +1306,7 @@
             
             if (temaAtual === 8) {
                 document.getElementById('game-screen').classList.add('hidden');
+                document.getElementById('tv-dvd-banner').classList.add('hidden');
                 document.getElementById('final-score-val').innerText = presenteVicthorAtivo ? "∞" : pontuacao;
                 document.getElementById('tela-agradecimento').classList.remove('hidden');
                 return;
@@ -1246,10 +1324,12 @@
 
         function voltarAoMenuPrincipal() {
             document.getElementById('tela-agradecimento').classList.add('hidden');
+            document.getElementById('tv-dvd-banner').classList.add('hidden');
             pontuacao = 0;
             fasesLiberadas = [1];
             presenteVicthorAtivo = false;
             primeiroBlocoAcertado = false;
+            usouSuperPulo = false;
             perguntasJaRespondidas.clear();
             document.getElementById('menu-personagem').classList.remove('hidden');
         }
