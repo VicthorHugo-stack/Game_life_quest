@@ -25,7 +25,6 @@
         .hud-item { display: flex; align-items: center; gap: 8px; }
         .hud-badge { background: rgba(255,255,255,0.12); padding: 6px 14px; border-radius: 20px; color: #ffa502; }
         
-        /* Ajustes do Canvas para suporte às imagens em Pixel Art */
         #gameCanvas { 
             background-color: #110e1b; 
             background-size: cover;
@@ -49,7 +48,6 @@
         .agradecimento-box p { font-size: 16px; line-height: 1.7; margin-bottom: 22px; color: #dcdde1; }
         .pontos-final { font-size: 30px; color: #ffa502; font-weight: 700; margin: 20px 0 30px 0; background: rgba(255, 165, 2, 0.1); padding: 12px; border-radius: 12px; border: 1px dashed #ffa502; }
 
-        /* TV DVD Bouncing Banner Style */
         #tv-dvd-banner {
             position: absolute;
             padding: 10px 20px;
@@ -150,7 +148,6 @@
             8: "⚠️ FASE 8 EXTREMA: Sem Tiros e Cronômetro Relâmpago!"
         };
 
-        // Mapeamento dos caminhos das imagens de fundo em pixel art por fase (corrigido)
         const fundosFases = {
             1: "fase1.jpg",
             2: "fase2.jpg",
@@ -208,8 +205,7 @@
         ];
 
         let perguntasJaRespondidas = new Set();
-        let presenteVicthorAtivo = false;
-        let hackPermanteCodValido = false;
+        let presenteVicthorAtivo = false; // Ao ser ativado, se mantém pelas fases
         let primeiroBlocoAcertado = false;
         let usouSuperPulo = false;
 
@@ -234,7 +230,6 @@
         let timerInterval = null;
         let perguntaAtualObjeto = null;
 
-        // Variaveis da animação DVD Victhor
         let dvdX = 100, dvdY = 100;
         let dvdVx = 3, dvdVy = 3;
         const dvdWidth = 140, dvdHeight = 50;
@@ -303,7 +298,6 @@
             }
         }
 
-        // Função utilitária para garantir a imagem de fundo correta da fase ou do limbo
         function atualizarImagemFundo() {
             if (noLimbo) {
                 canvas.style.backgroundImage = "url('limbo.jpg')";
@@ -323,13 +317,7 @@
             primeiroBlocoAcertado = false;
             usouSuperPulo = false;
 
-            // Atualiza o plano de fundo da fase selecionada
             atualizarImagemFundo();
-
-            if (!hackPermanteCodValido) {
-                presenteVicthorAtivo = false;
-                document.getElementById('tv-dvd-banner').classList.add('hidden');
-            }
             
             document.getElementById('menu-fases').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
@@ -345,15 +333,13 @@
             emPausa = true;
             let codigo = prompt("Digite o código secreto de acesso desenvolvedor:");
             if (codigo === "25022011") {
-                hackPermanteCodValido = true;
-                presenteVicthorAtivo = true;
+                presenteVicthorAtivo = true; // Permanece ativo permanentemente
                 document.getElementById('tv-dvd-banner').classList.add('hidden');
                 
                 if (!fasesLiberadas.includes(8)) fasesLiberadas.push(8);
                 temaAtual = 8;
                 noLimbo = false;
                 
-                // Força atualização da imagem de fundo para a Fase 8
                 atualizarImagemFundo();
 
                 mostrarAviso("CÓDIGO SECRETO ACEITO! 🚀", "Modo Hack Permanente ativado! Saltando diretamente para a FASE 8 EXTREMA!", () => {
@@ -362,7 +348,7 @@
                     resetarNivel();
                 });
             } else {
-                alert("Código Incorreto! O hack expirará ao final desta fase se não for ativado.");
+                alert("Código Incorreto!");
                 emPausa = false;
             }
         }
@@ -463,14 +449,12 @@
             escudoAtivo = false;
             usouSuperPulo = false;
 
-            // Mantém/Aplica a imagem de fundo correspondente
             atualizarImagemFundo();
 
             if (temaAtual === 8 && !presenteVicthorAtivo) municao = 0;
 
             let seed = temaAtual * 137;
 
-            // 1. PLATAFORMAS FIXAS
             plataformas = [];
             let qtdPlatFixas = 6 + (temaAtual % 3);
             for (let i = 0; i < qtdPlatFixas; i++) {
@@ -482,7 +466,6 @@
                 }
             }
 
-            // 2. PLATAFORMAS MÓVEIS
             plataformasMoveis = [];
             let qtdPlatMoveis = 4 + (temaAtual % 3);
             for (let i = 0; i < qtdPlatMoveis; i++) {
@@ -502,7 +485,6 @@
                 }
             }
 
-            // 3. BURACOS
             buracos = [];
             let qtdBuracos = 4 + (temaAtual % 3);
             let offsetBuraco = 750 + (temaAtual * 30 % 150);
@@ -518,7 +500,6 @@
                 }
             }
 
-            // 4. ESPINHOS
             espinhos = [];
             let qtdEspinhos = 4 + (temaAtual % 2);
             for (let i = 0; i < qtdEspinhos; i++) {
@@ -528,7 +509,6 @@
                 }
             }
 
-            // 5. BLOCOS DE PERGUNTAS E RECARGA
             blocos = [];
             let numBlocos = 6 + (temaAtual % 2);
             for (let i = 0; i < numBlocos; i++) {
@@ -561,7 +541,6 @@
                 });
             }
 
-            // 6. MOLAS
             molas = [];
             let qtdMolas = 3;
             for (let i = 0; i < qtdMolas; i++) {
@@ -571,7 +550,6 @@
                 }
             }
 
-            // 7. ITENS DE MUNIÇÃO
             municoesItems = [];
             let qtdMunicao = 5;
             for (let i = 0; i < qtdMunicao; i++) {
@@ -581,7 +559,6 @@
                 }
             }
 
-            // 8. INIMIGOS
             inimigos = [];
             let qtdInimigos = 5 + Math.floor(temaAtual / 2);
             for (let i = 0; i < qtdInimigos; i++) {
@@ -610,7 +587,6 @@
                 }
             }
 
-            // 9. MOEDAS
             moedas = [];
             for (let i = 0; i < 12; i++) {
                 let mox = 380 + (i * 410) + ((temaAtual * 30) % 90);
@@ -653,8 +629,10 @@
             if (!emPausa) {
                 update();
                 render();
-                if (presenteVicthorAtivo && !hackPermanteCodValido) {
+                if (!presenteVicthorAtivo) {
                     atualizarBannerDVD();
+                } else {
+                    document.getElementById('tv-dvd-banner').classList.add('hidden');
                 }
             }
             animFrameId = requestAnimationFrame(gameLoop);
@@ -793,10 +771,10 @@
                 if (emCimaDeBuraco) {
                     if (player.y > 720) {
                         if (caiuNoPrimeiro && primeiroBlocoAcertado && usouSuperPulo && temaAtual < 8 && !presenteVicthorAtivo) {
-                            presenteVicthorAtivo = true;
+                            presenteVicthorAtivo = true; // Ativa permanentemente
                             atualizarHUD();
                             inimigos.forEach(i => i.vivo = false);
-                            mostrarAviso("O PRESENTE DO DESENVOLVEDOR VICTHOR ATIVADO!", "Você ativou a sequência secreta! O Hack do Victhor está ativo durante esta fase! Clique no nome quicando para digitar o código secreto se quiser manter o hack permanente e ir direto para a Fase 8!", () => {
+                            mostrarAviso("O PRESENTE DO DESENVOLVEDOR VICTHOR ATIVADO!", "Você ativou a sequência secreta! O Hack do Victhor permanecerá ativo durante todas as fases!", () => {
                                 emPausa = false;
                             });
                         } else {
@@ -1311,7 +1289,7 @@
                         mostrarAviso("Você Sobreviveu ao Limbo!", "Incrível! Você escapou do Limbo. Retornando ao jogo...", () => {
                             noLimbo = false;
                             errosFaseAtual = 0;
-                            atualizarImagemFundo(); // Garante o retorno da imagem original da fase
+                            atualizarImagemFundo();
                             atualizarHUD();
                             emPausa = false;
                         });
@@ -1323,7 +1301,7 @@
                         mostrarAviso("Erro no Limbo (Protegido)", "O Presente do Desenvolvedor Victhor evitou a perda de progresso! Retornando ao jogo.", () => {
                             noLimbo = false;
                             errosFaseAtual = 0;
-                            atualizarImagemFundo(); // Garante o retorno da imagem original da fase
+                            atualizarImagemFundo();
                             atualizarHUD();
                             emPausa = false;
                         });
@@ -1367,19 +1345,13 @@
         function iniciarLimbo() {
             noLimbo = true;
             indiceLimbo = 0;
-            atualizarImagemFundo(); // Aplica a imagem do Limbo
+            atualizarImagemFundo();
             atualizarHUD();
             abrirPerguntaOuDesafio();
         }
 
         function concluirFase() {
             emPausa = true;
-            
-            // Se concluiu e não validou o código secreto permanente, desativa o hack
-            if (!hackPermanteCodValido) {
-                presenteVicthorAtivo = false;
-                document.getElementById('tv-dvd-banner').classList.add('hidden');
-            }
 
             if (temaAtual === 8) {
                 document.getElementById('game-screen').classList.add('hidden');
@@ -1404,8 +1376,7 @@
             document.getElementById('tv-dvd-banner').classList.add('hidden');
             pontuacao = 0;
             fasesLiberadas = [1];
-            presenteVicthorAtivo = false;
-            hackPermanteCodValido = false;
+            presenteVicthorAtivo = false; // Apenas limpa caso decida voltar ao menu inicial completo
             primeiroBlocoAcertado = false;
             usouSuperPulo = false;
             perguntasJaRespondidas.clear();
