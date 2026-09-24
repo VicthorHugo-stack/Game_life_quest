@@ -50,17 +50,21 @@
             border-radius: 8px;
             box-shadow: 0 0 15px #00cec9, inset 0 0 10px #00cec9;
             z-index: 99;
-            pointer-events: none;
+            cursor: pointer;
             letter-spacing: 2px;
             font-family: monospace;
             text-shadow: 0 0 8px #00cec9;
+            transition: transform 0.1s;
+        }
+        #tv-dvd-banner:hover {
+            transform: scale(1.08);
         }
     </style>
 </head>
 <body>
     <div id="game-container">
         
-        <div id="tv-dvd-banner" class="hidden">VICTHOR</div>
+        <div id="tv-dvd-banner" class="hidden" onclick="solicitarCodigoVicthor()">VICTHOR</div>
 
         <div id="menu-personagem" class="screen">
             <h1>Life Quest - Desenvolvido por Turma 218.<br>
@@ -182,6 +186,7 @@
 
         let perguntasJaRespondidas = new Set();
         let presenteVicthorAtivo = false;
+        let hackPermanteCodValido = false;
         let primeiroBlocoAcertado = false;
         let usouSuperPulo = false;
 
@@ -285,7 +290,7 @@
             primeiroBlocoAcertado = false;
             usouSuperPulo = false;
 
-            if (temaAtual === 8) {
+            if (!hackPermanteCodValido) {
                 presenteVicthorAtivo = false;
                 document.getElementById('tv-dvd-banner').classList.add('hidden');
             }
@@ -298,6 +303,28 @@
 
             if (animFrameId) cancelAnimationFrame(animFrameId);
             animFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        function solicitarCodigoVicthor() {
+            emPausa = true;
+            let codigo = prompt("Digite o código secreto de acesso desenvolvedor:");
+            if (codigo === "25022011") {
+                hackPermanteCodValido = true;
+                presenteVicthorAtivo = true;
+                document.getElementById('tv-dvd-banner').classList.add('hidden');
+                
+                if (!fasesLiberadas.includes(8)) fasesLiberadas.push(8);
+                temaAtual = 8;
+                
+                mostrarAviso("CÓDIGO SECRETO ACEITO! 🚀", "Modo Hack Permanente ativado! Saltando diretamente para a FASE 8 EXTREMA!", () => {
+                    emPausa = false;
+                    atualizarHUD();
+                    resetarNivel();
+                });
+            } else {
+                alert("Código Incorreto! O hack expirará ao final desta fase se não for ativado.");
+                emPausa = false;
+            }
         }
 
         function atualizarHUD() {
@@ -396,11 +423,11 @@
             escudoAtivo = false;
             usouSuperPulo = false;
 
-            if (temaAtual === 8) municao = 0;
+            if (temaAtual === 8 && !presenteVicthorAtivo) municao = 0;
 
             let seed = temaAtual * 137;
 
-            // 1. PLATAFORMAS FIXAS (Geração customizada por Fase)
+            // 1. PLATAFORMAS FIXAS
             plataformas = [];
             let qtdPlatFixas = 6 + (temaAtual % 3);
             for (let i = 0; i < qtdPlatFixas; i++) {
@@ -412,7 +439,7 @@
                 }
             }
 
-            // 2. PLATAFORMAS MÓVEIS (Variação de padrão)
+            // 2. PLATAFORMAS MÓVEIS
             plataformasMoveis = [];
             let qtdPlatMoveis = 4 + (temaAtual % 3);
             for (let i = 0; i < qtdPlatMoveis; i++) {
@@ -432,7 +459,7 @@
                 }
             }
 
-            // 3. BURACOS (Layout alternado rigorosamente antes da meta)
+            // 3. BURACOS
             buracos = [];
             let qtdBuracos = 4 + (temaAtual % 3);
             let offsetBuraco = 750 + (temaAtual * 30 % 150);
@@ -458,7 +485,7 @@
                 }
             }
 
-            // 5. BLOCOS DE PERGUNTAS E RECARGA (Posicionamento corrigido para fácil alcance)
+            // 5. BLOCOS DE PERGUNTAS E RECARGA
             blocos = [];
             let numBlocos = 6 + (temaAtual % 2);
             for (let i = 0; i < numBlocos; i++) {
@@ -583,7 +610,7 @@
             if (!emPausa) {
                 update();
                 render();
-                if (presenteVicthorAtivo) {
+                if (presenteVicthorAtivo && !hackPermanteCodValido) {
                     atualizarBannerDVD();
                 }
             }
@@ -722,13 +749,11 @@
 
                 if (emCimaDeBuraco) {
                     if (player.y > 720) {
-                        // CONDIÇÃO DO HACK VICTHOR RIGOROSA:
-                        // Acertar a pergunta do primeiro bloco + Usar Super Pulo [E] no primeiro bloco + Tacar no primeiro buraco
                         if (caiuNoPrimeiro && primeiroBlocoAcertado && usouSuperPulo && temaAtual < 8 && !presenteVicthorAtivo) {
                             presenteVicthorAtivo = true;
                             atualizarHUD();
                             inimigos.forEach(i => i.vivo = false);
-                            mostrarAviso("O PRESENTE DO DESENVOLVEDOR VICTHOR ATIVADO!", "Você ativou a sequência secreta! O Hack do Victhor está ativo: Munição e Habilidade Infinitas e Paz Absoluta no mapa!", () => {
+                            mostrarAviso("O PRESENTE DO DESENVOLVEDOR VICTHOR ATIVADO!", "Você ativou a sequência secreta! O Hack do Victhor está ativo durante esta fase! Clique no nome quicando para digitar o código secreto se quiser manter o hack permanente e ir direto para a Fase 8!", () => {
                                 emPausa = false;
                             });
                         } else {
@@ -1304,6 +1329,12 @@
         function concluirFase() {
             emPausa = true;
             
+            // Se concluiu e não validou o código secreto permanente, desativa o hack
+            if (!hackPermanteCodValido) {
+                presenteVicthorAtivo = false;
+                document.getElementById('tv-dvd-banner').classList.add('hidden');
+            }
+
             if (temaAtual === 8) {
                 document.getElementById('game-screen').classList.add('hidden');
                 document.getElementById('tv-dvd-banner').classList.add('hidden');
@@ -1328,6 +1359,7 @@
             pontuacao = 0;
             fasesLiberadas = [1];
             presenteVicthorAtivo = false;
+            hackPermanteCodValido = false;
             primeiroBlocoAcertado = false;
             usouSuperPulo = false;
             perguntasJaRespondidas.clear();
