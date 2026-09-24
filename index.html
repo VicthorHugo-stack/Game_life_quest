@@ -150,16 +150,16 @@
             8: "⚠️ FASE 8 EXTREMA: Sem Tiros e Cronômetro Relâmpago!"
         };
 
-        // Mapeamento dos caminhos das imagens de fundo em pixel art por fase
+        // Mapeamento dos caminhos das imagens de fundo em pixel art por fase (corrigido)
         const fundosFases = {
             1: "fase1.jpg",
-            2: "fase2.jpg.",
-            3: "fase3.jpg.",
-            4: "fase4.jpg.",
-            5: "fase5.jpg.",
-            6: "fase6.jpg.",
-            7: "fase7.jpg.",
-            8: "fase8.jpg."
+            2: "fase2.jpg",
+            3: "fase3.jpg",
+            4: "fase4.jpg",
+            5: "fase5.jpg",
+            6: "fase6.jpg",
+            7: "fase7.jpg",
+            8: "fase8.jpg"
         };
 
         const bancoPerguntasOriginal = {
@@ -303,14 +303,18 @@
             }
         }
 
+        // Função utilitária para garantir a imagem de fundo correta da fase ou do limbo
+        function atualizarImagemFundo() {
+            if (noLimbo) {
+                canvas.style.backgroundImage = "url('limbo.jpg')";
+            } else if (fundosFases[temaAtual]) {
+                canvas.style.backgroundImage = `url('${fundosFases[temaAtual]}')`;
+            }
+        }
+
         function iniciarJogo(fase) {
             if (!fasesLiberadas.includes(fase)) return;
             temaAtual = fase;
-
-            // Altera dinamicamente a imagem de fundo do Canvas para a fase correspondente
-            if (fundosFases[fase]) {
-                canvas.style.backgroundImage = `url('${fundosFases[fase]}')`;
-            }
 
             errosFaseAtual = 0;
             noLimbo = false;
@@ -318,6 +322,9 @@
             escudoAtivo = false;
             primeiroBlocoAcertado = false;
             usouSuperPulo = false;
+
+            // Atualiza o plano de fundo da fase selecionada
+            atualizarImagemFundo();
 
             if (!hackPermanteCodValido) {
                 presenteVicthorAtivo = false;
@@ -344,7 +351,11 @@
                 
                 if (!fasesLiberadas.includes(8)) fasesLiberadas.push(8);
                 temaAtual = 8;
+                noLimbo = false;
                 
+                // Força atualização da imagem de fundo para a Fase 8
+                atualizarImagemFundo();
+
                 mostrarAviso("CÓDIGO SECRETO ACEITO! 🚀", "Modo Hack Permanente ativado! Saltando diretamente para a FASE 8 EXTREMA!", () => {
                     emPausa = false;
                     atualizarHUD();
@@ -451,6 +462,9 @@
             habilidadeUsoDisponivel = true;
             escudoAtivo = false;
             usouSuperPulo = false;
+
+            // Mantém/Aplica a imagem de fundo correspondente
+            atualizarImagemFundo();
 
             if (temaAtual === 8 && !presenteVicthorAtivo) municao = 0;
 
@@ -1297,6 +1311,7 @@
                         mostrarAviso("Você Sobreviveu ao Limbo!", "Incrível! Você escapou do Limbo. Retornando ao jogo...", () => {
                             noLimbo = false;
                             errosFaseAtual = 0;
+                            atualizarImagemFundo(); // Garante o retorno da imagem original da fase
                             atualizarHUD();
                             emPausa = false;
                         });
@@ -1308,6 +1323,7 @@
                         mostrarAviso("Erro no Limbo (Protegido)", "O Presente do Desenvolvedor Victhor evitou a perda de progresso! Retornando ao jogo.", () => {
                             noLimbo = false;
                             errosFaseAtual = 0;
+                            atualizarImagemFundo(); // Garante o retorno da imagem original da fase
                             atualizarHUD();
                             emPausa = false;
                         });
@@ -1351,8 +1367,7 @@
         function iniciarLimbo() {
             noLimbo = true;
             indiceLimbo = 0;
-            // Opcional: imagem específica para o Limbo
-            canvas.style.backgroundImage = "url('limbo.jpg')";
+            atualizarImagemFundo(); // Aplica a imagem do Limbo
             atualizarHUD();
             abrirPerguntaOuDesafio();
         }
